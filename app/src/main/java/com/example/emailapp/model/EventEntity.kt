@@ -6,7 +6,7 @@ import java.time.LocalDate
 
 @Entity(tableName = "events")
 data class EventEntity(
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    val date: LocalDate,
+    @PrimaryKey val id: Int,
+    val date: String,
     val description: String
 )

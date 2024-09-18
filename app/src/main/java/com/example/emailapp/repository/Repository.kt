@@ -1,34 +1,72 @@
 package com.example.emailapp.repository
 
-import com.example.emailapp.data.EmailDao
-import com.example.emailapp.data.EventDao
+import android.util.Log
 import com.example.emailapp.model.EmailEntity
 import com.example.emailapp.model.EventEntity
-import kotlinx.coroutines.flow.Flow
-import java.time.LocalDate
+import com.example.emailapp.network.RetrofitClient
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
-class Repository(private val emailDao: EmailDao, private val eventDao: EventDao) {
-    val allEmails: Flow<List<EmailEntity>> = emailDao.getAllEmails()
+class Repository {
 
-    fun getEventsByDate(date: LocalDate): Flow<List<EventEntity>> = eventDao.getEventsByDate(date)
-
-    suspend fun insertEmail(email: EmailEntity) {
-        emailDao.insertEmail(email)
+    suspend fun getAllEmails(): List<EmailEntity> {
+        return withContext(Dispatchers.IO) {
+            val response = RetrofitClient.apiService.getAllEmails().execute()
+            if (response.isSuccessful) response.body() ?: emptyList() else emptyList()
+        }
     }
 
-    suspend fun insertEvent(event: EventEntity) {
-        eventDao.insertEvent(event)
+    suspend fun addEmail(email: EmailEntity): EmailEntity? {
+        return withContext(Dispatchers.IO) {
+            val response = RetrofitClient.apiService.addEmail(email).execute()
+            if (response.isSuccessful) response.body() else null
+        }
     }
 
-    suspend fun deleteEvent(event: EventEntity) {
-        eventDao.deleteEvent(event)
+    suspend fun updateEmail(id: Int, email: EmailEntity): EmailEntity? {
+        return withContext(Dispatchers.IO) {
+            val response = RetrofitClient.apiService.updateEmail(id, email).execute()
+            if (response.isSuccessful) response.body() else null
+        }
     }
 
-    suspend fun updateEmail(email: EmailEntity) {
-        emailDao.updateEmail(email)
+    suspend fun deleteEmail(id: Int): Boolean {
+        return withContext(Dispatchers.IO) {
+            val response = RetrofitClient.apiService.deleteEmail(id).execute()
+            response.isSuccessful
+        }
     }
 
-    suspend fun deleteEmail(email: EmailEntity) {
-        emailDao.deleteEmail(email)
+    suspend fun getEventsByDate(date: String): List<EventEntity> {
+        return withContext(Dispatchers.IO) {
+            val response = RetrofitClient.apiService.getEventsByDate(date).execute()
+            if (response.isSuccessful) response.body() ?: emptyList() else emptyList()
+        }
+    }
+
+    suspend fun addEvent(event: EventEntity): EventEntity? {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = RetrofitClient.apiService.addEvent(event).execute()
+                if (response.isSuccessful) {
+                    Log.d("Repository", "Event added successfully: ${response.body()}")
+                    response.body()
+                } else {
+                    Log.e("Repository", "Failed to add event: ${response.errorBody()?.string()}")
+                    null
+                }
+            } catch (e: Exception) {
+                Log.e("Repository", "Exception occurred while adding event", e)
+                null
+            }
+        }
+    }
+
+
+    suspend fun deleteEvent(id: Int): Boolean {
+        return withContext(Dispatchers.IO) {
+            val response = RetrofitClient.apiService.deleteEvent(id).execute()
+            response.isSuccessful
+        }
     }
 }

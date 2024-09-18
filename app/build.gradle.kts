@@ -72,6 +72,15 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2")
 
+    // Retrofit for making network requests
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+
+    // Retrofit converter for JSON (Gson)
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+
+    // Coroutine support for Retrofit
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

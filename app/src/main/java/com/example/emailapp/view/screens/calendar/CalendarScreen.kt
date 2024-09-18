@@ -66,7 +66,7 @@ fun CalendarScreen(navController: NavHostController, viewModel: CalendarViewMode
                         selectedDate = selectedDate,
                         onDateSelected = {
                             selectedDate = it
-                            viewModel.getEventsForDate(it)
+                            viewModel.getEventsForDate(it.toString())
                             showDialog = true
                         }
                     )
@@ -107,7 +107,7 @@ fun CalendarScreen(navController: NavHostController, viewModel: CalendarViewMode
             },
             confirmButton = {
                 Button(onClick = {
-                    viewModel.addEvent(EventEntity(date = selectedDate, description = newEvent))
+                    viewModel.addEvent(EventEntity(1, date = selectedDate.toString(), description = newEvent))
                     showDialog = false
                     newEvent = ""
                 }) {

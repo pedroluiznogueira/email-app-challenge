@@ -8,7 +8,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.emailapp.model.EmailEntity
 import com.example.emailapp.viewmodel.EmailViewModel
@@ -27,7 +26,7 @@ fun EmailListScreen(navController: NavHostController, viewModel: EmailViewModel)
 
     // Função para deletar um email
     fun onDeleteEmail(email: EmailEntity) {
-        viewModel.deleteEmail(email) // Remove do banco de dados
+        viewModel.deleteEmail(email.id) // Remove do banco de dados
     }
 
     // Função para atualizar um email

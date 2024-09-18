@@ -10,25 +10,19 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.room.Room
-import com.example.emailapp.data.AppDatabase
 import com.example.emailapp.repository.Repository
 import com.example.emailapp.ui.theme.EmailAppTheme
 import com.example.emailapp.view.screens.calendar.CalendarScreen
 import com.example.emailapp.view.screens.emaillist.EmailListScreen
 import com.example.emailapp.viewmodel.CalendarViewModel
 import com.example.emailapp.viewmodel.EmailViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     private lateinit var repository: Repository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val database = Room.databaseBuilder(applicationContext, AppDatabase::class.java, "app_database").build()
-        repository = Repository(database.emailDao(), database.eventDao())
+        repository = Repository()
 
         setContent {
             EmailAppTheme {

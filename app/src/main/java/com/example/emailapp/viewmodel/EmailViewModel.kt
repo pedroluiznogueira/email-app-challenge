@@ -9,33 +9,37 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class EmailViewModel(private val repository: Repository) : ViewModel() {
+
     private val _emails = MutableStateFlow<List<EmailEntity>>(emptyList())
     val emails = _emails.asStateFlow()
 
     init {
         viewModelScope.launch {
-            repository.allEmails.collect {
-                _emails.value = it
-            }
+            _emails.value = repository.getAllEmails()
         }
     }
 
     fun addEmail(email: EmailEntity) {
         viewModelScope.launch {
-            repository.insertEmail(email)
+            repository.addEmail(email)?.let {
+                _emails.value = _emails.value + it
+            }
         }
     }
 
     fun updateEmail(email: EmailEntity) {
         viewModelScope.launch {
-            repository.updateEmail(email)
+            repository.updateEmail(email.id, email)?.let { updatedEmail ->
+                _emails.value = _emails.value.map { if (it.id == updatedEmail.id) updatedEmail else it }
+            }
         }
     }
 
-    // Deleta um email do banco de dados
-    fun deleteEmail(email: EmailEntity) {
+    fun deleteEmail(id: Int) {
         viewModelScope.launch {
-            repository.deleteEmail(email)
+            if (repository.deleteEmail(id)) {
+                _emails.value = _emails.value.filter { it.id.toLong().toInt() != id }
+            }
         }
     }
 }
