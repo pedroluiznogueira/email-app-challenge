@@ -145,7 +145,7 @@ fun EmailListScreen(navController: NavHostController, viewModel: EmailViewModel)
     error?.let {
         AlertDialog(
             onDismissRequest = { viewModel.clearError() },
-            title = { Text("Rate Limit Exceeded") },
+            title = { Text("Spam detected") },
             text = { Text(it) },
             confirmButton = {
                 Button(onClick = { viewModel.clearError() }) {
