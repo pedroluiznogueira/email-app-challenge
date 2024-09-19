@@ -14,11 +14,14 @@ import com.example.emailapp.repository.Repository
 import com.example.emailapp.ui.theme.EmailAppTheme
 import com.example.emailapp.view.screens.calendar.CalendarScreen
 import com.example.emailapp.view.screens.emaillist.EmailListScreen
+import com.example.emailapp.view.screens.settings.SettingsScreen
 import com.example.emailapp.viewmodel.CalendarViewModel
 import com.example.emailapp.viewmodel.EmailViewModel
+import com.example.emailapp.viewmodel.PreferencesViewModel
 
 class MainActivity : ComponentActivity() {
     private lateinit var repository: Repository
+    private val userId: Long = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,21 +29,23 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             EmailAppTheme {
-                AppNavigation(repository)
+                AppNavigation(repository, userId)
             }
         }
     }
 }
 
 @Composable
-fun AppNavigation(repository: Repository) {
+fun AppNavigation(repository: Repository, userId: Long) {
     val navController = rememberNavController()
     val emailViewModel: EmailViewModel = viewModel(factory = EmailViewModelFactory(repository))
     val calendarViewModel: CalendarViewModel = viewModel(factory = CalendarViewModelFactory(repository))
+    val preferencesViewModel: PreferencesViewModel = viewModel(factory = PreferencesViewModelFactory(repository))
 
     NavHost(navController = navController, startDestination = "email_list") {
         composable("email_list") { EmailListScreen(navController, emailViewModel) }
         composable("calendar") { CalendarScreen(navController, calendarViewModel) }
+        composable("settings") { SettingsScreen(preferencesViewModel, userId, navController) }
     }
 }
 
@@ -63,3 +68,14 @@ class CalendarViewModelFactory(private val repository: Repository) : ViewModelPr
         }
     }
 }
+
+class PreferencesViewModelFactory(private val repository: Repository) : ViewModelProvider.Factory {
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        return when {
+            modelClass.isAssignableFrom(PreferencesViewModel::class.java) -> PreferencesViewModel(repository) as T
+            else -> throw IllegalArgumentException("Unknown ViewModel class")
+        }
+    }
+}
+

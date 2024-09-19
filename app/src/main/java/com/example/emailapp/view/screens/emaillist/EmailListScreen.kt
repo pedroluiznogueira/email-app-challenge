@@ -63,6 +63,9 @@ fun EmailListScreen(navController: NavHostController, viewModel: EmailViewModel)
             Button(onClick = { showDialog = true }) {
                 Text("Add Email")
             }
+            Button(onClick = { navController.navigate("settings") }) { // New Button to navigate to Settings
+                Text("Go to Settings")
+            }
         }
 
         LazyColumn(

@@ -1,11 +1,17 @@
 package com.example.emailapp.network
 
+import com.example.emailapp.model.DevicePreferences
 import com.example.emailapp.model.EmailEntity
 import com.example.emailapp.model.EventEntity
 import retrofit2.http.*
 import retrofit2.Call
 
 interface ApiService {
+    @GET("api/preferences/{userId}")
+    fun getPreferences(@Path("userId") userId: Long): Call<DevicePreferences>
+
+    @POST("api/preferences")
+    fun savePreferences(@Body preferences: DevicePreferences): Call<DevicePreferences>
 
     @GET("api/emails")
     fun getAllEmails(): Call<List<EmailEntity>>
