@@ -13,6 +13,9 @@ class EmailViewModel(private val repository: Repository) : ViewModel() {
     private val _emails = MutableStateFlow<List<EmailEntity>>(emptyList())
     val emails = _emails.asStateFlow()
 
+    private val _error = MutableStateFlow<String?>(null)
+    val error = _error.asStateFlow()
+
     init {
         viewModelScope.launch {
             _emails.value = repository.getAllEmails()
@@ -21,10 +24,24 @@ class EmailViewModel(private val repository: Repository) : ViewModel() {
 
     fun addEmail(email: EmailEntity) {
         viewModelScope.launch {
-            repository.addEmail(email)?.let {
-                _emails.value = _emails.value + it
-            }
+            val result = repository.addEmail(email)
+            result.fold(
+                onSuccess = { newEmail ->
+                    newEmail?.let {
+                        _emails.value = _emails.value + it
+                        _error.value = null  // Clear any previous error
+                    }
+                },
+                onFailure = { exception ->
+                    _error.value = exception.message  // Set the error message
+                }
+            )
         }
+    }
+
+    // Method to clear the error after it has been shown
+    fun clearError() {
+        _error.value = null
     }
 
     fun updateEmail(email: EmailEntity) {

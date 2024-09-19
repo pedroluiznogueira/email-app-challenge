@@ -21,7 +21,7 @@ import com.example.emailapp.viewmodel.PreferencesViewModel
 
 class MainActivity : ComponentActivity() {
     private lateinit var repository: Repository
-    private val userId: Long = 1
+    private val userId: Long = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

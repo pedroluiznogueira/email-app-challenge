@@ -17,13 +17,25 @@ class Repository {
         }
     }
 
-    suspend fun addEmail(email: EmailEntity): EmailEntity? {
+    suspend fun addEmail(email: EmailEntity): Result<EmailEntity?> {
         return withContext(Dispatchers.IO) {
-            val response = RetrofitClient.apiService.addEmail(email).execute()
-            if (response.isSuccessful) response.body() else null
+            try {
+                val response = RetrofitClient.apiService.addEmail(email).execute()
+                if (response.isSuccessful) {
+                    Log.d("Repository", "Email added successfully: ${response.body()}")
+                    Result.success(response.body())
+                } else {
+                    // Log the error message from the backend
+                    val errorMessage = response.errorBody()?.string()
+                    Log.e("Repository", "Failed to add email: $errorMessage")
+                    Result.failure(Exception(errorMessage))
+                }
+            } catch (e: Exception) {
+                Log.e("Repository", "Exception occurred while adding email", e)
+                Result.failure(e)  // Return the exception as the failure result
+            }
         }
     }
-
     suspend fun updateEmail(id: Int, email: EmailEntity): EmailEntity? {
         return withContext(Dispatchers.IO) {
             val response = RetrofitClient.apiService.updateEmail(id, email).execute()

@@ -16,6 +16,7 @@ import com.example.emailapp.viewmodel.EmailViewModel
 @Composable
 fun EmailListScreen(navController: NavHostController, viewModel: EmailViewModel) {
     val emails by viewModel.emails.collectAsState(initial = emptyList())
+    val error by viewModel.error.collectAsState()
 
     var searchQuery by remember { mutableStateOf("") }
     var selectedTag by remember { mutableStateOf("All") }
@@ -24,14 +25,12 @@ fun EmailListScreen(navController: NavHostController, viewModel: EmailViewModel)
     var newEmailSender by remember { mutableStateOf("") }
     var newEmailTags by remember { mutableStateOf("") }
 
-    // Função para deletar um email
     fun onDeleteEmail(email: EmailEntity) {
-        viewModel.deleteEmail(email.id) // Remove do banco de dados
+        viewModel.deleteEmail(email.id)
     }
 
-    // Função para atualizar um email
     fun onUpdateEmail(updatedEmail: EmailEntity) {
-        viewModel.updateEmail(updatedEmail) // Atualiza no banco de dados
+        viewModel.updateEmail(updatedEmail)
     }
 
     Column {
@@ -137,6 +136,20 @@ fun EmailListScreen(navController: NavHostController, viewModel: EmailViewModel)
             dismissButton = {
                 Button(onClick = { showDialog = false }) {
                     Text("Cancel")
+                }
+            }
+        )
+    }
+
+    // Show an error dialog if rate limit is triggered
+    error?.let {
+        AlertDialog(
+            onDismissRequest = { viewModel.clearError() },
+            title = { Text("Rate Limit Exceeded") },
+            text = { Text(it) },
+            confirmButton = {
+                Button(onClick = { viewModel.clearError() }) {
+                    Text("OK")
                 }
             }
         )
